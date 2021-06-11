@@ -1,0 +1,10 @@
+Questions
+===================================================
+1. How do we handle 0 requests ?
+2. Should the indexes contain the index for no_ride
+3. is no ride part of the action space?
+4. is there a reward for no_ride
+5. If the trip hours are 719 and the driver needs to take an action which takes 2 hours, should the driver take action or sit idle?
+6. why are we encoding it to a vector?
+
+  

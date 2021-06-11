@@ -1,5 +1,5 @@
 {
     "azureML.defaultWorkspaceId": "/subscriptions/925a5ad8-a21a-48c0-92a2-5a8a2a4dfc46/resourceGroups/ml-workbench/providers/Microsoft.MachineLearningServices/workspaces/ml-workbench-eu",
-    "python.linting.enabled": true,
+    "python.linting.enabled": false,
     "python.linting.pylintEnabled": true
 }
