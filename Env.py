@@ -120,6 +120,10 @@ class CabDriver():
             next_state_hour_of_day, next_state_day_of_week = self.get_updated_time(next_state_hour_of_day, next_state_day_of_week)
             
             hours_of_trip = start_location_to_end_location
+            
+            revenue = R * start_location_to_end_location
+            cost_of_trip = C * (hours_of_trip)
+            reward =  revenue - cost_of_trip
 
         else:
 
