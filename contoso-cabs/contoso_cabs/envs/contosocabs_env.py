@@ -40,7 +40,7 @@ class ContosoCabs_v0 (gym.Env):
         self.day = np.random.choice(np.arange(0, self.d))
         self.time = np.random.choice(np.arange(0,self.t))
         self.location = np.random.choice(np.arange(0,self.m))
-        self.action_space = spaces.Tuple((spaces.Discrete(self.m), spaces.Discrete(self.m)))
+        self.action_space = spaces.Discrete(self.m * self.m) # APEX does not support tuple action spaces 
         self.action_space_values = [(p,q) for p in range(self.m) for q in range(self.m)]
         self.observation_space = spaces.Tuple((spaces.Discrete(self.m), spaces.Discrete(self.t), spaces.Discrete(self.d)))
         self.state_init = (self.location, self.time, self.day)

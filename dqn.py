@@ -68,7 +68,7 @@ class DQNAgent:
             # get possible requests/actions given a state
             # choose an action randomly, this will contain the no-ride action
             action = self.env.action_space.sample()
-            return self.env.action_space_values.index(action), action
+            return self.env.action_space_values[action], action
         else:
 
             # get q_value for all actions = this should be 21 (20 actions + no ride)
@@ -124,7 +124,7 @@ class DQNAgent:
                     # if it is not terminal state then the target value = reward + discount * (max(q(next_state, a)))
                     new_q= rewards[i] + self.discount_factor * (np.amax(target_qval[i]))
                 
-                target[i][self.env.action_space_values.index(actions[i])] = new_q
+                target[i][self.env.action_space_values[actions[i]] = new_q
 
             # 4. Fit your model and track the loss values
             history = self.model.fit(update_input, target, batch_size=self.batch_size, epochs=1, verbose=0)
