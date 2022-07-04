@@ -139,3 +139,10 @@ cython_debug/
 
 .vscode/
 models/
+*.amlignore.*
+*.py.amltmp
+.ipynb_aml_checkpoints/
+dqn.py.amltmp
+*.*.amltmp
+.tmp/
+logs/

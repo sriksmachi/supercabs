@@ -1,0 +1,18 @@
+channels:
+  - anaconda
+  - conda-forge
+dependencies:
+  - python=3.8.1
+  - pip:
+      - azureml-defaults
+      - gym==0.19.0
+      - dm-tree
+      - ray-on-aml==0.2.1
+      - ray[rllib,tune]==1.12.0 #this is to change the ray version 
+      - tensorflow==2.3.0
+      - scikit-image
+      - PySocks==1.5.7
+      - protobuf==3.20.1 #fix the problem with recent release from Google that break the job
+  - matplotlib
+  - pip < 20.3
+name: azureml_cfc9e96c7b0b43301a0ba4c6bd3548e5

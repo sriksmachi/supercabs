@@ -1,0 +1,9 @@
+gym
+numpy
+ray
+pillow
+tqdm
+tensorflow
+matplotlib
+logger=1.4
+ray-on-aml
