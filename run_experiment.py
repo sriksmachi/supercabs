@@ -33,7 +33,7 @@ def main():
 
     config = {
         "num_gpus": 0,
-        "num_workers": 2,
+        "num_workers": 10,
         "gamma": 0.98,
         "n_step": 10,
         "num_cpus_per_worker": 1,
@@ -45,7 +45,7 @@ def main():
         '--run', training_algorithm,
         '--env', rl_environment,
         '--config', json.dumps(json.dumps(config)),
-        '--stop', '\'{"episode_reward_mean": 1000, "time_total_s": 3600}\''
+        '--stop', '\'{"training_iteration": 10}\''
     ]
 
     src = ScriptRunConfig(source_directory ='.',

@@ -43,10 +43,13 @@ class Callbacks(DefaultCallbacks):
         if episode is None:
             pass
         print("episode {} (env-idx={}) started.".format(episode.episode_id, env_index))
-        logger.info(f'result: {episode}')
+        print(f'result: {episode}')
         run.log(
             name='episode_reward_mean',
             value=sum(episode.agent_rewards.values())/len(episode.agent_rewards.keys()))
+        run.log(
+            name='episode_reward_max',
+            value=max(episode.agent_rewards.values()))
         run.log(
             name='episode_length',
             value=episode.length)
@@ -62,7 +65,9 @@ def initiate_train():
     args = train.create_parser().parse_args()
 
     # Mapping configuration
-    config = APEX_DEFAULT_CONFIG
+    config = {}
+    if args.run == "APEX":
+        config = APEX_DEFAULT_CONFIG
     config["env"] = ContosoCabs_v0
     config["log_level"] = "INFO"
     config["callbacks"] = Callbacks
