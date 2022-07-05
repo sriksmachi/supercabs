@@ -29,5 +29,5 @@ python run_experiment.py
 Optional
 - You can run the RL job in local machine by running the below command. In local mode the script uses the developer workstation to spin-off workers (1 by default).
 ```
-python run_experiment_local.py
+python run_tune_local.py
 ```
