@@ -13,6 +13,7 @@ dependencies:
       - scikit-image
       - PySocks==1.5.7
       - protobuf==3.20.1 #fix the problem with recent release from Google that break the job
+      - argparse
   - matplotlib
   - pip < 20.3
 name: azureml_cfc9e96c7b0b43301a0ba4c6bd3548e5

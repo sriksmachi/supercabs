@@ -10,6 +10,7 @@ import logging
 import pickle
 import os
 import shutil
+import argparse
 
 # for building DQN model
 import tensorflow as tf
@@ -18,9 +19,16 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, Activation, Flatten
 from tensorflow.keras.optimizers import Adam
 
+from contosocabs_env import ContosoCabs_v0
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-debug', action='store_true')
+args = parser.parse_args()
+debugmode = args.debug
 
 class DQNAgent:
     
@@ -36,6 +44,7 @@ class DQNAgent:
         self.epsilon_min = epsilon_min
         self.learning_rate = learning_rate      
         self.batch_size = batch_size     
+
         self.state_encoded = 36 # (m + t + d)
         self.memory = deque(maxlen=2000)
         self.model = self.build_model()
@@ -51,8 +60,9 @@ class DQNAgent:
         return model
 
     def state_encod_arch2(self, state):
-        """convert the (state-action) into a vector so that it can be fed to the NN. This method converts a given state-action pair into a vector format. 
-        Hint: The vector is of size m + t + d"""
+        """
+        convert the (state-action) into a vector so that it can be fed to the NN. This method converts a given state-action pair into a vector format.
+        """
         state_encod = np.array([0 for _ in range(0, self.env.m + self.env.t + self.env.d)])
         state_encod[state[0]] = 1 # start location
         state_encod[self.env.m + state[1]] = 1 # hour of the day
@@ -61,10 +71,9 @@ class DQNAgent:
 
     def get_action(self, state):
         """
-        get action in a state according to an epsilon-greedy approach
+        get action in a state according to an epsilon-greedy approach.
         """
         if np.random.rand() <= self.epsilon:
-
             # get possible requests/actions given a state
             # choose an action randomly, this will contain the no-ride action
             action = self.env.action_space.sample()
@@ -81,7 +90,7 @@ class DQNAgent:
             # get the index with max q-value
             max_q_value_index = np.argmax(q_value)
 
-            return max_q_value_index, self.env.action_space_values[max_q_value_index]
+            return self.env.action_space_values[max_q_value_index], max_q_value_index
         
     # adds the experience to memory
     def append_sample(self, state, action, reward, next_state, hours_of_trip):
@@ -124,7 +133,7 @@ class DQNAgent:
                     # if it is not terminal state then the target value = reward + discount * (max(q(next_state, a)))
                     new_q= rewards[i] + self.discount_factor * (np.amax(target_qval[i]))
                 
-                target[i][self.env.action_space_values[actions[i]] = new_q
+                target[i][self.env.action_space_values.index(actions[i])] = new_q
 
             # 4. Fit your model and track the loss values
             history = self.model.fit(update_input, target, batch_size=self.batch_size, epochs=1, verbose=0)
@@ -135,25 +144,26 @@ class DQNAgent:
             pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
 def run_once():
-    env = gym.make("contosocabs-v0")
+    logger.info('Running in debug mode')
+    env = ContosoCabs_v0({})
     state_size = len(env.observation_space.spaces)
-    action_size = env.action_space.spaces[0].n * env.action_space.spaces[1].n    
+    action_size = env.action_space.n   
     agent = DQNAgent(state_size, action_size, env=env)
     current_state = env.state_init
     total_reward = 0
     env.reset()
     while not env.done: 
-        index, action = agent.get_action(current_state)
-        next_state, reward, done, info = env.step(action)
+        action, index = agent.get_action(current_state)
+        next_state, reward, done, info = env.step(index)
         agent.append_sample(current_state, action, reward, next_state, info["hours_of_trip"])
         current_state = next_state
         total_reward += reward
     logger.info(f"Total Reward: {total_reward}")
 
 def main():
-    env = gym.make("contosocabs-v0")
+    env = ContosoCabs_v0({})
     state_size = len(env.observation_space.spaces)
-    action_size = env.action_space.spaces[0].n * env.action_space.spaces[1].n # len(env.action_space.spaces), 5*5
+    action_size = env.action_space.n # len(env.action_space.spaces), 5*5
     start_time = time.time()
     rewards_tracked = []
     loss_tracked = []
@@ -173,8 +183,9 @@ def main():
         total_reward = 0
         training_steps = 0
         while not env.done: 
-            index, action = agent.get_action(current_state)
-            next_state, reward, done, info = env.step(action)
+            # index returns from 0-25, action returns a tuple of source and destination
+            action, index = agent.get_action(current_state)
+            next_state, reward, done, info = env.step(index)
             agent.append_sample(current_state, action, reward, next_state, info["hours_of_trip"])
             if training_steps % 10 == 0:
                 history = agent.train_model()
@@ -212,4 +223,7 @@ if __name__ == "__main__":
     if os.path.exists(path):
         shutil.rmtree(path)
     os.mkdir(path)
-    main()
+    if debugmode:
+        run_once()
+    else:
+        main()
